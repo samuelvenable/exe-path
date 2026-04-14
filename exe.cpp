@@ -2,7 +2,7 @@
 
  MIT License
  
- Copyright © 2025 Samuel Venable
+ Copyright © 2026 Samuel Venable
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,8 @@
 // libkvm comes with OpenBSD; no additional dependency
 // Update 4/13/2026: now includes many other platforms
 
+#include "exe.hpp"
 #include <string>
-#include <cerrno> // errno
-#include <cstdio> // printf(...)
-#include <cstring> // strerror(...)
 #if defined(_WIN32)
 #include <vector>
 #include <cstddef>
@@ -70,6 +68,7 @@
 #elif defined(__OpenBSD__)
 #include <vector>
 #include <sstream>
+#include <cerrno>
 #include <cstddef>
 #include <climits>
 #include <cstdlib>
@@ -278,15 +277,4 @@ std::string get_executable_path() {
   }
   #endif
   return path;
-}
-
-int main() {
-  std::string exe = get_executable_path();
-  bool failed = exe.empty();
-  if (!failed) {
-    printf("get_executable_path() result: %s\n", exe.c_str());
-  } else {
-    printf("get_executable_path() error: %s\n", strerror(errno));
-  }
-  return failed;
 }
