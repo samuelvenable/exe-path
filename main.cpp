@@ -25,9 +25,9 @@
 */
 
 #include "exe.hpp"
-#include <cerrno> // errno
-#include <cstdio> // printf(...)
-#include <cstring> // strerror(...)
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
 
 int main() {
   std::string exe = get_executable_path();
