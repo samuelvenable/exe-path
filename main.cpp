@@ -1,0 +1,46 @@
+/*
+
+ MIT License
+ 
+ Copyright © 2026 Samuel Venable
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ 
+*/
+
+// OpenBSD Current Executable Path Name Implementation
+// Compile: clang++ main.cpp -o a.out -std=c++17 -lkvm
+// libkvm comes with OpenBSD; no additional dependency
+// Update 4/13/2026: now includes many other platforms
+
+#include "exe.hpp"
+#include <cerrno> // errno
+#include <cstdio> // printf(...)
+#include <cstring> // strerror(...)
+
+int main() {
+  std::string exe = get_executable_path();
+  bool failed = exe.empty();
+  if (!failed) {
+    printf("get_executable_path() result: %s\n", exe.c_str());
+  } else {
+    printf("get_executable_path() error: %s\n", strerror(errno));
+  }
+  return failed;
+}
