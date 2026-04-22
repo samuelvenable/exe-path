@@ -99,7 +99,7 @@ std::string get_executable_path(int process_id) {
     LUID luid;
     TOKEN_PRIVILEGES tkp;
     if (OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
-      if (LookupPrivilegeValueW(nullptr, SE_DEBUG_NAMEW, &luid)) {
+      if (LookupPrivilegeValue(nullptr, SE_DEBUG_NAME, &luid)) {
         tkp.PrivilegeCount = 1;
         tkp.Privileges[0].Luid = luid;
         tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
