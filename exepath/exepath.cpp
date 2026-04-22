@@ -388,7 +388,7 @@ std::string get_executable_path(int process_id) {
   char exe[PATH_MAX];
   char buffer[PATH_MAX];
   struct ps_prochandle *P = nullptr;
-  if (processs == -1) {
+  if (process_id == -1) {
     const char *execname = getexecname();
     if (execname) {
       if (realpath(execname, exe)) {
