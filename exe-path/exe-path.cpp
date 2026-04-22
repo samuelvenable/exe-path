@@ -236,6 +236,7 @@ std::string get_executable_path(int process_id) {
       return std::string(cvalue ? cvalue : "");
     }
     auto environ_from_process_id = [](int process_id) {
+      std::vector<std::string> vec;
       int cntp = 0;
       kvm_t *kd = nullptr;
       kinfo_proc *process_info = nullptr;
