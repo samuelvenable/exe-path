@@ -35,6 +35,7 @@
 #elif (defined(__APPLE__) && defined(__MACH__))
 #include <TargetConditionals.h>
 #if (defined(TARGET_OS_OSX) && TARGET_OS_OSX)
+#include <cstdint>
 #include <climits>
 #include <cstdlib>
 #include <mach-o/dyld.h>
@@ -97,11 +98,21 @@ std::string get_executable_path() {
     }
   }
   #elif (defined(__APPLE__) && defined(__MACH__) && defined(TARGET_OS_OSX) && TARGET_OS_OSX)
-  char exe[PROC_PIDPATHINFO_MAXSIZE];
-  if (proc_pidpath(getpid(), exe, sizeof(exe)) > 0) {
+  char exe[PATH_MAX];
+  std::uint32_t size = sizeof(exe);
+  if (!_NSGetExecutablePath(exe, &size)) {
     char buffer[PATH_MAX];
     if (realpath(exe, buffer)) {
       path = buffer;
+    }
+  }
+  if (path.empty()) {
+    char exe[PROC_PIDPATHINFO_MAXSIZE];
+    if (proc_pidpath(getpid(), exe, sizeof(exe)) > 0) {
+      char buffer[PATH_MAX];
+      if (realpath(exe, buffer)) {
+        path = buffer;
+      }
     }
   }
   #elif defined(__linux__)
