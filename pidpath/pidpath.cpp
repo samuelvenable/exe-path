@@ -156,10 +156,9 @@ namespace pidpath {
           path = buffer;
         }
       }
-    }
-    if (path.empty()) {
+    } else {
       char exe[PROC_PIDPATHINFO_MAXSIZE];
-      if (proc_pidpath((process_id == -1) ? getpid() : process_id, exe, sizeof(exe)) > 0) {
+      if (proc_pidpath(process_id, exe, sizeof(exe)) > 0) {
         char buffer[PATH_MAX];
         if (realpath(exe, buffer)) {
           path = buffer;
