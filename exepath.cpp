@@ -25,17 +25,13 @@
 */
 
 #include "exepath/exepath.hpp"
-#include <cerrno>
 #include <cstdio>
-#include <cstring>
 
 int main(int argc, char **argv) {
   std::string exe = exepath::get_executable_path();
   bool failed = exe.empty();
   if (!failed) {
     printf("exepath::get_executable_path() result: %s\n", exe.c_str());
-  } else {
-    printf("exepath::get_executable_path() error: %s\n", strerror(errno));
   }
   return 0;
 }
