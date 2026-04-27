@@ -25,9 +25,7 @@
 */
 
 #include "pidpath/pidpath.hpp"
-#include <cerrno>
 #include <cstdio>
-#include <cstring>
 #include <cstdlib>
 
 int main(int argc, char **argv) {
@@ -39,8 +37,6 @@ int main(int argc, char **argv) {
   bool failed = exe.empty();
   if (!failed) {
     printf("pidpath::get_executable_path(%d) result: %s\n", process_id, exe.c_str());
-  } else {
-    printf("pidpath::get_executable_path(%d) error: %s\n", process_id, strerror(errno));
   }
   return 0;
 }
