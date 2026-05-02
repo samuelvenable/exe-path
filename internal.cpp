@@ -28,11 +28,11 @@
 #include <cstdio>
 
 int main(int argc, char **argv) {
-  const char *__execname = __getexecname();
-  if (__execname) {
-    printf("const char *__getexecname()=\"%s\"\n", __execname);
+  const char *internal = __getexecname();
+  if (internal) {
+    printf("const char *__getexecname() = \"%s\"\n", internal);
   } else {
-    printf("const char *__getexecname()=%s\n", __execname);
+    printf("const char *__getexecname() = %s\n", internal);
   }
   return 0;
 }
