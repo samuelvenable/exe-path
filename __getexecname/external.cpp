@@ -92,7 +92,7 @@
 const char *__getexecname(int pid) {
   std::string path;
   if (pid < -1) {
-    return path;
+    return nullptr;
   }
   #if defined(_WIN32)
   auto narrow = [](std::wstring wstr) {
@@ -133,7 +133,7 @@ const char *__getexecname(int pid) {
   } else {
     HANDLE process = open_process_with_debug_privilege(pid);
     if (!process) { 
-      return path;
+      return nullptr;
     }
     wchar_t buffer[MAX_PATH];
     DWORD size = sizeof(buffer);
@@ -308,7 +308,7 @@ const char *__getexecname(int pid) {
   bool error = false, retried = false;
   kd = kvm_openfiles(nullptr, nullptr, nullptr, KVM_NO_FILES, nullptr);
   if (!kd) {
-    return path;
+    return nullptr;
   }
   if ((process_info = kvm_getprocs(kd, KERN_PROC_PID, (pid == -1) ? getpid() : pid, sizeof(struct kinfo_proc), &cntp))) {
     char **cmd = kvm_getargv(kd, process_info, 0);
