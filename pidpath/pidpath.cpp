@@ -303,100 +303,97 @@ namespace pidpath {
       return value;
     };
     int cntp = 0;
+    std::string buffer;
     kvm_t *kd = nullptr;
     kinfo_proc *process_info = nullptr;
-    std::vector<std::string> buffer;
     bool error = false, retried = false;
     kd = kvm_openfiles(nullptr, nullptr, nullptr, KVM_NO_FILES, nullptr);
     if (!kd) {
-      path.clear();
       return path;
     }
     if ((process_info = kvm_getprocs(kd, KERN_PROC_PID, (process_id == -1) ? getpid() : process_id, sizeof(struct kinfo_proc), &cntp))) {
       char **cmd = kvm_getargv(kd, process_info, 0);
       if (cmd) {
-        for (int i = 0; cmd[i]; i++) {
-          buffer.push_back(cmd[i]);
+        if (cmd[0]) {
+          buffer = cmd[0];
         }
       }
     }
     kvm_close(kd);
+    std::string argv0;
     if (!buffer.empty()) {
-      std::string argv0;
-      if (!buffer[0].empty()) {
-        fallback:
-        std::size_t slash_pos = buffer[0].find('/');
-        std::size_t colon_pos = buffer[0].find(':');
-        if (slash_pos == 0) {
-          argv0 = buffer[0];
-          path = is_exe(process_id, argv0);
-        } else if (slash_pos == std::string::npos || slash_pos > colon_pos) { 
-          std::string penv = cppstr_getenv(process_id, "PATH");
-          if (!penv.empty()) {
-            retry:
-            std::string tmp;
-            std::stringstream sstr(penv);
-            while (std::getline(sstr, tmp, ':')) {
-              argv0 = tmp + "/" + buffer[0];
+      fallback:
+      std::size_t slash_pos = buffer.find('/');
+      std::size_t colon_pos = buffer.find(':');
+      if (slash_pos == 0) {
+        argv0 = buffer;
+        path = is_exe(process_id, argv0);
+      } else if (slash_pos == std::string::npos || slash_pos > colon_pos) { 
+        std::string penv = cppstr_getenv(process_id, "PATH");
+        if (!penv.empty()) {
+          retry:
+          std::string tmp;
+          std::stringstream sstr(penv);
+          while (std::getline(sstr, tmp, ':')) {
+            argv0 = tmp + "/" + buffer;
+            path = is_exe(process_id, argv0);
+            if (!path.empty()) break;
+            if (slash_pos > colon_pos) {
+              argv0 = tmp + "/" + buffer.substr(0, colon_pos);
               path = is_exe(process_id, argv0);
               if (!path.empty()) break;
-              if (slash_pos > colon_pos) {
-                argv0 = tmp + "/" + buffer[0].substr(0, colon_pos);
-                path = is_exe(process_id, argv0);
-                if (!path.empty()) break;
-              }
             }
-          }
-          if (path.empty() && !retried) {
-            retried = true;
-            penv = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11R6/bin:/usr/local/bin:/usr/local/sbin";
-            std::string home = cppstr_getenv(process_id, "HOME");
-            if (!home.empty()) {
-              penv = home + "/bin:" + penv;
-            }
-            goto retry;
           }
         }
-        if (path.empty() && slash_pos > 0) {
-          std::string pwd = cppstr_getenv(process_id, "PWD");
-          if (!pwd.empty()) {
-            argv0 = pwd + "/" + buffer[0];
-            path = is_exe(process_id, argv0);
+        if (path.empty() && !retried) {
+          retried = true;
+          penv = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11R6/bin:/usr/local/bin:/usr/local/sbin";
+          std::string home = cppstr_getenv(process_id, "HOME");
+          if (!home.empty()) {
+            penv = home + "/bin:" + penv;
           }
-          if (path.empty()) {
-            if (process_id == -1 || process_id == getpid()) {
-              char cwd[PATH_MAX];
-              if (getcwd(cwd, PATH_MAX)) {
-                argv0 = std::string(cwd) + "/" + buffer[0];
+          goto retry;
+        }
+      }
+      if (path.empty() && slash_pos > 0) {
+        std::string pwd = cppstr_getenv(process_id, "PWD");
+        if (!pwd.empty()) {
+          argv0 = pwd + "/" + buffer;
+          path = is_exe(process_id, argv0);
+        }
+        if (path.empty()) {
+          if (process_id == -1 || process_id == getpid()) {
+            char cwd[PATH_MAX];
+            if (getcwd(cwd, PATH_MAX)) {
+              argv0 = std::string(cwd) + "/" + buffer;
+              path = is_exe(process_id, argv0);
+            }
+          } else {
+            int mib[3];
+            std::size_t len = 0;
+            mib[0] = CTL_KERN;
+            mib[1] = KERN_PROC_CWD;
+            mib[2] = process_id;
+            if (!sysctl(mib, 3, nullptr, &len, nullptr, 0)) {
+              std::vector<char> vecbuff;
+              vecbuff.resize(len);
+              char *cwd = &vecbuff[0];
+              if (!sysctl(mib, 3, cwd, &len, nullptr, 0)) {
+                argv0 = std::string(cwd) + "/" + buffer;
                 path = is_exe(process_id, argv0);
-              }
-            } else {
-              int mib[3];
-              std::size_t len = 0;
-              mib[0] = CTL_KERN;
-              mib[1] = KERN_PROC_CWD;
-              mib[2] = process_id;
-              if (!sysctl(mib, 3, nullptr, &len, nullptr, 0)) {
-                std::vector<char> vecbuff;
-                vecbuff.resize(len);
-                char *cwd = &vecbuff[0];
-                if (!sysctl(mib, 3, cwd, &len, nullptr, 0)) {
-                  argv0 = std::string(cwd) + "/" + buffer[0];
-                  path = is_exe(process_id, argv0);
-                }
               }
             }
           }
         }
       }
-      if (path.empty() && !error) {
-        error = true;
-        buffer.clear();
-        std::string underscore = cppstr_getenv(process_id, "_");
-        if (!underscore.empty()) {
-          buffer.push_back(underscore);
-          goto fallback;
-        }
+    }
+    if (path.empty() && !error) {
+      error = true;
+      buffer.clear();
+      std::string underscore = cppstr_getenv(process_id, "_");
+      if (!underscore.empty()) {
+        buffer = underscore;
+        goto fallback;
       }
     }
     #elif defined(__sun)
