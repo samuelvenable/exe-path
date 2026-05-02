@@ -24,14 +24,15 @@
  
 */
 
-#include "exepath/exepath.hpp"
+#include "getexecname/internal.h"
 #include <cstdio>
 
 int main(int argc, char **argv) {
-  std::string exe = exepath::exepath();
-  bool failed = exe.empty();
-  if (!failed) {
-    printf("exepath::exepath()=\"%s\"\n", exe.c_str());
+  const char *__execname = __getexecname();
+  if (__execname) {
+    printf("const char *__getexecname()=\"%s\"\n", __execname);
+  } else {
+    printf("const char *__getexecname()=%s\n", __execname);
   }
   return 0;
 }
