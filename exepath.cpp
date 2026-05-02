@@ -28,10 +28,10 @@
 #include <cstdio>
 
 int main(int argc, char **argv) {
-  std::string exe = exepath::get_executable_path();
+  std::string exe = exepath::exepath();
   bool failed = exe.empty();
   if (!failed) {
-    printf("exepath::get_executable_path() result: %s\n", exe.c_str());
+    printf("exepath::exepath()=\"%s\"\n", exe.c_str());
   }
   return 0;
 }
