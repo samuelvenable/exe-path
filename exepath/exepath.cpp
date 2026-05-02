@@ -176,7 +176,7 @@ namespace exepath {
       kvm_close(kd);
       return res;
     };
-    auto cppstr_getenv = [](std::string name) {
+    auto cppgetenv = [](std::string name) {
       const char *cresult = getenv(name.c_str());
       std::string result = cresult ? cresult : "";
       return result;
@@ -208,7 +208,7 @@ namespace exepath {
         argv0 = buffer;
         path = is_exe(argv0);
       } else if (slash_pos == std::string::npos || slash_pos > colon_pos) { 
-        std::string penv = cppstr_getenv("PATH");
+        std::string penv = cppgetenv("PATH");
         if (!penv.empty()) {
           retry:
           std::string tmp;
@@ -227,7 +227,7 @@ namespace exepath {
         if (path.empty() && !retried) {
           retried = true;
           penv = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11R6/bin:/usr/local/bin:/usr/local/sbin";
-          std::string home = cppstr_getenv("HOME");
+          std::string home = cppgetenv("HOME");
           if (!home.empty()) {
             penv = home + "/bin:" + penv;
           }
@@ -235,7 +235,7 @@ namespace exepath {
         }
       }
       if (path.empty() && slash_pos > 0) {
-        std::string pwd = cppstr_getenv("PWD");
+        std::string pwd = cppgetenv("PWD");
         if (!pwd.empty()) {
           argv0 = pwd + "/" + buffer;
           path = is_exe(argv0);
@@ -251,7 +251,7 @@ namespace exepath {
       if (path.empty() && !error) {
         error = true;
         buffer.clear();
-        std::string underscore = cppstr_getenv("_");
+        std::string underscore = cppgetenv("_");
         if (!underscore.empty()) {
           buffer = underscore;
           goto fallback;
