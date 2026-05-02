@@ -24,10 +24,4 @@
  
 */
 
-#include <string>
-
-namespace exepathex {
-
-  std::string exepathex(int process_id = -1);
-
-} // namespace exepathex
+const char *__getexecname(int pid = -1);
