@@ -24,7 +24,7 @@
  
 */
 
-#include "getexecname/external.h"
+#include "__getexecname/external.h"
 #include <cstdio>
 #include <cstdlib>
 
