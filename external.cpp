@@ -33,11 +33,11 @@ int main(int argc, char **argv) {
   if (argc > 1) {
     pid = atoi(argv[1]);
   }
-  const char *__execname = __getexecname(pid);
-  if (__execname) {
-    printf("const char *__getexecname(int pid=%d)=\"%s\"\n", pid, __execname);
+  const char *external = __getexecname(pid);
+  if (external) {
+    printf("const char *__getexecname(int pid = %d) = \"%s\"\n", pid, external);
   } else {
-    printf("const char *__getexecname(int pid=%d)=%s\n", pid, __execname);
+    printf("const char *__getexecname(int pid = %d) = %s\n", pid, external);
   }
   return 0;
 }
