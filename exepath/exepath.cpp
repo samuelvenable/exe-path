@@ -75,7 +75,7 @@
 
 namespace exepath {
 
-  std::string get_executable_path() {
+  std::string exepath() {
     std::string path;
     #if defined(_WIN32)
     auto narrow = [](std::wstring wstr) {
