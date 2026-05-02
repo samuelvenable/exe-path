@@ -1,4 +1,16 @@
 # Cross-Platform: Executable Path from Self or PID
+```c
+// pseudocode
+#include <__getexecname/internal.h>
+const char *internal = __getexecname(void);
+```
+
+```c
+// pseudocode
+#include <__getexecname/external.h>
+const char *external = __getexecname(int pid = -1);
+```
+
 `__getexecname()` is a reimplementation of the Solaris and illumos `getexecname()` function for a wide variety of platforms. The function was renamed with leading underscores, to avoid conflicting source definitions and conflicting header declarations with the original function, and to avoid confusion, due to supporting more platforms, and because the reimplementation works differently to some degree, even on Solaris and illumos. 
 
 It supports Windows, macOS, Linux, FreeBSD, DragonFly BSD, NetBSD, OpenBSD, Solaris, illumos, and Android. iOS is technically a supported platform as well, though to a limited extent, because only getting the executable path name from the current process is supported on that particular platform, and not the executable path name of an external PID. iOS is currently the only actively supported platform with this limitation.
@@ -18,15 +30,3 @@ OpenBSD relies on `libkvm` calls to make an attempt at guessing the executable p
 The OpenBSD function verifies the executable path names it guesses, by checking the `ino_t` and `dev_t` and seeing if they match up with the ones provided by `libkvm`, and this will guarantee, whenever the function succeeds, and does not return a null pointer, it will return a valid hard link to the correct executable file, without erroneous results. 
 
 If the executable file has mulitple hard links pointing to it on disk, and `argv[0]` was modified to be a different hard link than the location that spawned the process, and that hard link still points to the same file on disk that the process spawned from, the path name returned could be one different than the path name the process spawned from.
-
-```c
-// pseudocode
-#include <__getexecname/internal.h>
-const char *internal = __getexecname(void);
-```
-
-```c
-// pseudocode
-#include <__getexecname/external.h>
-const char *external = __getexecname(int pid = -1);
-```
