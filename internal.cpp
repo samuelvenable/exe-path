@@ -30,9 +30,9 @@
 int main(int argc, char **argv) {
   const char *internal = __getexecname();
   if (internal) {
-    printf("const char *__getexecname() = \"%s\"\n", internal);
+    printf("const char *__getexecname(void) = \"%s\"\n", internal);
   } else {
-    printf("const char *__getexecname() = %s\n", internal);
+    printf("const char *__getexecname(void) = %s\n", internal);
   }
   return 0;
 }
