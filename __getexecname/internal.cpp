@@ -87,7 +87,7 @@ const char *__getexecname(void) {
     nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (hFile != INVALID_HANDLE_VALUE) {
       DWORD len = GetFinalPathNameByHandleW(hFile, path, MAX_PATH, 0);
-      if (len) {
+      if (path && len) {
         if (wcslen(path) >= 4 && path[0] == '\\' && path[1] == '\\' && path[2] == '?' && path[3] == '\\') {
           result = std::wstring(path + 4, (std::size_t)(path + len));
         } else {
