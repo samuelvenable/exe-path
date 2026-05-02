@@ -100,7 +100,9 @@ const char *__getexecname(int pid) {
   auto resolve_symbolic_links = [](std::wstring wstr) {
     std::wstring result;
     wchar_t path[MAX_PATH];
-    HANDLE hFile = CreateFileW(wstr.c_str(), 0, 0, 0, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
+    HANDLE hFile = CreateFileW(wstr.c_str(), GENERIC_READ, 
+    FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 
+    nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (hFile != INVALID_HANDLE_VALUE) {
       DWORD result = GetFinalPathNameByHandleW(hFile, path, MAX_PATH, 0);
       if (result) {
