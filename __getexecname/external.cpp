@@ -458,6 +458,6 @@ const char *__getexecname(int pid) {
     }
   }
   #endif
-  static std::string result = path;
+  static std::string result; result = path;
   return ((!result.empty()) ? result.c_str() : nullptr);
 }
